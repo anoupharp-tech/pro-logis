@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Power Speed</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+
+  <!-- ===== AUTH SCREEN ===== -->
+  <div id="authScreen" class="auth-screen">
+    <div class="auth-bg">
+      <div class="auth-bg-shapes">
+        <div class="shape s1"></div><div class="shape s2"></div><div class="shape s3"></div>
+      </div>
+    </div>
+    <div class="auth-wrapper">
+      <!-- Language Bar -->
+      <div class="auth-lang-bar">
+        <div class="auth-brand">
+          <i class="fas fa-shipping-fast"></i>
+          <span>Power Speed</span>
+        </div>
+        <div class="lang-pills">
+          <button class="lang-pill active" onclick="App.setLang('en')" data-lang="en">🇬🇧 EN</button>
+          <button class="lang-pill" onclick="App.setLang('lo')" data-lang="lo">🇱🇦 ລາວ</button>
+          <button class="lang-pill" onclick="App.setLang('th')" data-lang="th">🇹🇭 ไทย</button>
+          <button class="lang-pill" onclick="App.setLang('zh')" data-lang="zh">🇨🇳 中文</button>
+        </div>
+      </div>
+
+      <div class="auth-content">
+        <!-- Hero Side -->
+        <div class="auth-hero">
+          <div class="hero-icon-wrap">
+            <i class="fas fa-globe-asia hero-globe"></i>
+            <div class="hero-orbit o1"><i class="fas fa-box"></i></div>
+            <div class="hero-orbit o2"><i class="fas fa-truck"></i></div>
+            <div class="hero-orbit o3"><i class="fas fa-warehouse"></i></div>
+          </div>
+          <h2 data-i18n="heroTitle">Enterprise Logistics<br>Management Platform</h2>
+          <p data-i18n="heroDesc">Complete ERP solution for logistics — tracking, warehouse, finance, drivers, and more.</p>
+          <div class="hero-stats">
+            <div class="hstat"><strong>4</strong><span>Languages</span></div>
+            <div class="hstat"><strong>18+</strong><span>Modules</span></div>
+            <div class="hstat"><strong>5</strong><span>Roles</span></div>
+          </div>
+        </div>
+
+        <!-- Auth Cards -->
+        <div class="auth-card-area">
+          <!-- LOGIN -->
+          <div id="loginCard" class="auth-card hidden">
+            <h2 data-i18n="welcomeBack">Welcome Back</h2>
+            <p class="auth-subtitle" data-i18n="loginSubtitle">Sign in to your account</p>
+
+            <div class="quick-login-section">
+              <p class="ql-label" data-i18n="quickDemo">Quick Demo Login:</p>
+              <div class="ql-grid">
+                <button class="ql-btn ql-admin" onclick="Auth.quickLogin('admin')"><i class="fas fa-shield-alt"></i><span>Admin</span></button>
+                <button class="ql-btn ql-manager" onclick="Auth.quickLogin('manager')"><i class="fas fa-user-tie"></i><span>Manager</span></button>
+                <button class="ql-btn ql-agent" onclick="Auth.quickLogin('agent')"><i class="fas fa-store"></i><span>Agent</span></button>
+                <button class="ql-btn ql-driver" onclick="Auth.quickLogin('driver')"><i class="fas fa-truck"></i><span>Driver</span></button>
+                <button class="ql-btn ql-customer" onclick="Auth.quickLogin('customer')"><i class="fas fa-user"></i><span>Customer</span></button>
+              </div>
+            </div>
+
+            <div class="or-divider"><span data-i18n="orLogin">or login with credentials</span></div>
+
+            <form onsubmit="Auth.login(event)">
+              <div class="form-field">
+                <label data-i18n="email">Email</label>
+                <div class="field-icon">
+                  <i class="fas fa-envelope"></i>
+                  <input type="email" id="loginEmail" placeholder="admin@prologists.la">
+                </div>
+              </div>
+              <div class="form-field">
+                <label data-i18n="password">Password</label>
+                <div class="field-icon">
+                  <i class="fas fa-lock"></i>
+                  <input type="password" id="loginPassword" placeholder="••••••••">
+                  <button type="button" class="eye-btn" onclick="Utils.togglePwd('loginPassword',this)"><i class="fas fa-eye"></i></button>
+                </div>
+              </div>
+              <button type="submit" class="btn-auth-submit">
+                <i class="fas fa-sign-in-alt"></i>
+                <span data-i18n="signIn">Sign In</span>
+              </button>
+            </form>
+            <p class="auth-toggle"><span data-i18n="noAccount">Don't have an account?</span> <a href="#" onclick="Auth.showPanel('register')" data-i18n="createAccount">Create Account</a></p>
+            <p class="auth-toggle"><a href="#" onclick="Auth.showPanel('track')"><i class="fas fa-search"></i> <span data-i18n="trackParcel">Track a Parcel</span></a></p>
+          </div>
+
+          <!-- REGISTER -->
+          <div id="registerCard" class="auth-card hidden">
+            <h2 data-i18n="createAccount">Create Account</h2>
+            <p class="auth-subtitle" data-i18n="registerSubtitle">Register as a new customer</p>
+            <form onsubmit="Auth.register(event)">
+              <div class="form-row2">
+                <div class="form-field">
+                  <label data-i18n="fullName">Full Name</label>
+                  <input type="text" id="regName" required>
+                </div>
+                <div class="form-field">
+                  <label data-i18n="phone">Phone</label>
+                  <input type="tel" id="regPhone" required>
+                </div>
+              </div>
+              <div class="form-field">
+                <label data-i18n="email">Email</label>
+                <input type="email" id="regEmail" required>
+              </div>
+              <div class="form-row2">
+                <div class="form-field">
+                  <label data-i18n="password">Password</label>
+                  <input type="password" id="regPassword" required>
+                </div>
+                <div class="form-field">
+                  <label data-i18n="confirmPassword">Confirm Password</label>
+                  <input type="password" id="regConfirm" required>
+                </div>
+              </div>
+              <div class="form-field">
+                <label data-i18n="address">Address</label>
+                <input type="text" id="regAddress">
+              </div>
+              <div class="form-row2">
+                <div class="form-field">
+                  <label data-i18n="city">City</label>
+                  <input type="text" id="regCity">
+                </div>
+                <div class="form-field">
+                  <label data-i18n="country">Country</label>
+                  <select id="regCountry">
+                    <option value="LA">Laos</option>
+                    <option value="TH">Thailand</option>
+                    <option value="CN">China</option>
+                    <option value="OTHER">Other</option>
+                  </select>
+                </div>
+              </div>
+              <button type="submit" class="btn-auth-submit">
+                <i class="fas fa-user-plus"></i>
+                <span data-i18n="register">Register</span>
+              </button>
+            </form>
+            <p class="auth-toggle"><span data-i18n="haveAccount">Already have an account?</span> <a href="#" onclick="Auth.showPanel('login')" data-i18n="signIn">Sign In</a></p>
+          </div>
+
+          <!-- PUBLIC TRACKING -->
+          <div id="trackCard" class="auth-card">
+            <h2 data-i18n="trackParcel">Track Your Parcel</h2>
+            <p class="auth-subtitle" data-i18n="trackSubtitle">Enter tracking number to see status</p>
+            <div class="track-search-box">
+              <div class="field-icon">
+                <i class="fas fa-barcode"></i>
+                <input type="text" id="pubTrackInput" placeholder="LA20260322001" data-i18n-placeholder="enterTracking" onkeydown="if(event.key==='Enter') Pages.publicTrack()">
+              </div>
+              <button onclick="Utils.openBarcodeScanner(v=>{document.getElementById('pubTrackInput').value=v.toUpperCase();Pages.publicTrack()})" class="btn-auth-submit" style="margin-top:0;background:var(--secondary)">
+                <i class="fas fa-camera"></i>
+              </button>
+              <button onclick="Pages.publicTrack()" class="btn-auth-submit" style="margin-top:0">
+                <i class="fas fa-search"></i>
+              </button>
+            </div>
+            <p id="trackHint" style="font-size:11px;color:var(--text-muted);text-align:center;margin:-8px 0 12px"></p>
+            <div id="pubTrackResult" class="pub-track-result"></div>
+            <p class="auth-toggle"><a href="#" onclick="Auth.showPanel('login')"><i class="fas fa-arrow-left"></i> <span data-i18n="backToLogin">Back to Login</span></a></p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== MAIN APPLICATION ===== -->
+  <div id="mainApp" class="app-layout hidden">
+
+    <!-- SIDEBAR -->
+    <aside id="sidebar" class="sidebar">
+      <div class="sb-header">
+        <div class="sb-logo">
+          <i class="fas fa-shipping-fast"></i>
+          <span class="sb-logo-text">Power Speed</span>
+        </div>
+        <button class="sb-collapse-btn" onclick="App.toggleSidebar()">
+          <i class="fas fa-chevron-left" id="sbCollapseIcon"></i>
+        </button>
+      </div>
+
+      <div class="sb-user" style="cursor:pointer" onclick="Pages.navigate('settings');App.closeSidebar()" title="ການຕັ້ງຄ່າ">
+        <div class="sb-avatar" id="sbAvatar">A</div>
+        <div class="sb-user-info">
+          <p class="sb-user-name" id="sbUserName">Admin User</p>
+          <span class="sb-role-badge" id="sbUserRole">Admin</span>
+        </div>
+      </div>
+
+      <nav class="sb-nav" id="sbNav"><!-- dynamic --></nav>
+
+      <div class="sb-footer">
+        <button class="sb-logout-btn" onclick="Auth.logout()">
+          <i class="fas fa-sign-out-alt"></i>
+          <span data-i18n="logout">Logout</span>
+        </button>
+      </div>
+    </aside>
+
+    <!-- MAIN AREA -->
+    <div class="app-main" id="appMain">
+
+      <!-- HEADER -->
+      <header class="app-header">
+        <div class="ah-left">
+          <button class="mobile-menu" onclick="App.toggleSidebar()"><i class="fas fa-bars"></i></button>
+          <div class="breadcrumb" id="breadcrumb"><i class="fas fa-home"></i> <span id="breadcrumbText">Dashboard</span></div>
+        </div>
+        <div class="ah-right">
+          <div class="hdr-lang">
+            <button class="hlang active" onclick="App.setLang('en')" data-lang="en">🇬🇧 EN</button>
+            <button class="hlang" onclick="App.setLang('lo')" data-lang="lo">🇱🇦 ລາວ</button>
+            <button class="hlang" onclick="App.setLang('th')" data-lang="th">🇹🇭 ไทย</button>
+            <button class="hlang" onclick="App.setLang('zh')" data-lang="zh">🇨🇳 中文</button>
+          </div>
+          <div class="hdr-notif" onclick="App.toggleNotifPanel()">
+            <i class="fas fa-bell"></i>
+            <span class="notif-dot" id="notifDot"></span>
+          </div>
+          <div class="hdr-user" onclick="App.toggleUserMenu()">
+            <div class="hdr-avatar" id="hdrAvatar">A</div>
+            <span id="hdrUserName">Admin</span>
+            <i class="fas fa-chevron-down"></i>
+            <div class="user-dropdown hidden" id="userDropdown">
+              <a href="#" onclick="Pages.navigate('settings')"><i class="fas fa-cog"></i> <span data-i18n="settings">Settings</span></a>
+              <a href="#" onclick="Auth.logout()"><i class="fas fa-sign-out-alt"></i> <span data-i18n="logout">Logout</span></a>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <!-- Notification Panel -->
+      <div id="notifPanel" class="notif-panel hidden">
+        <div class="np-header">
+          <h3 data-i18n="notifications">Notifications</h3>
+          <button onclick="App.toggleNotifPanel()"><i class="fas fa-times"></i></button>
+        </div>
+        <div id="notifList" class="np-list"></div>
+      </div>
+
+      <!-- PAGE CONTENT -->
+      <main id="pageContent" class="page-content">
+        <!-- Rendered dynamically -->
+      </main>
+    </div>
+  </div>
+
+  <!-- MODAL -->
+  <div id="modalOverlay" class="modal-overlay hidden" onclick="App.closeModalOnBg(event)">
+    <div class="modal-box" id="modalBox">
+      <div class="modal-header" id="modalHeader">
+        <h3 id="modalTitle">Modal</h3>
+        <button onclick="App.closeModal()"><i class="fas fa-times"></i></button>
+      </div>
+      <div id="modalBody" class="modal-body"></div>
+      <div id="modalFooter" class="modal-footer hidden"></div>
+    </div>
+  </div>
+
+  <!-- TOAST -->
+  <div id="toastContainer" class="toast-container"></div>
+
+  <!-- Hidden canvases for barcode/QR -->
+  <svg id="barcodeSVG" style="display:none"></svg>
+  <canvas id="qrCanvas" style="display:none"></canvas>
+
+  <!-- External Libraries -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.5/dist/JsBarcode.all.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+  <!-- App Scripts -->
+  <script src="js/i18n.js"></script>
+  <script src="js/database.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/utils.js"></script>
+  <script src="js/pages.js"></script>
+  <script src="js/pages2.js"></script>
+  <script src="js/pages3.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>

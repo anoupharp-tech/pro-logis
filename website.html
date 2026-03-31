@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="lo">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Power Speed — ບໍລິການຂົນສົ່ງດ່ວນ ລາວ-ໄທ-ຈີນ</title>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--primary:#1e40af;--primary-light:#3b82f6;--primary-pale:#dbeafe;--secondary:#0f172a;--success:#10b981;--warning:#f59e0b;--danger:#ef4444;--bg:#f8fafc;--surface:#fff;--border:#e2e8f0;--text:#1e293b;--muted:#64748b;--light:#94a3b8;--radius:12px;--shadow:0 1px 3px rgba(0,0,0,.08),0 4px 16px rgba(0,0,0,.06)}
+body{font-family:'Segoe UI',Tahoma,sans-serif;color:var(--text);background:var(--bg)}
+a{text-decoration:none;color:inherit}
+
+/* NAV */
+.nav{position:fixed;top:0;left:0;right:0;z-index:100;background:rgba(255,255,255,.95);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);padding:0 24px;height:64px;display:flex;align-items:center;justify-content:space-between}
+.nav-brand{display:flex;align-items:center;gap:10px;font-size:20px;font-weight:800;color:var(--primary)}
+.nav-brand i{font-size:24px}
+.nav-links{display:flex;gap:24px;align-items:center}
+.nav-links a{font-size:14px;font-weight:500;color:var(--muted);transition:.2s}
+.nav-links a:hover{color:var(--primary)}
+.nav-links .btn-login{background:var(--primary);color:#fff;padding:8px 20px;border-radius:8px;font-weight:600;font-size:13px}
+.nav-links .btn-login:hover{background:var(--primary-light)}
+@media(max-width:768px){.nav-links a:not(.btn-login){display:none}}
+
+/* HERO */
+.hero{padding:120px 24px 80px;background:linear-gradient(135deg,#1e3a8a 0%,#1e40af 40%,#3b82f6 100%);color:#fff;text-align:center;position:relative;overflow:hidden}
+.hero::before{content:'';position:absolute;inset:0;background:url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")}
+.hero h1{font-size:clamp(28px,5vw,48px);font-weight:800;margin-bottom:12px;position:relative}
+.hero p{font-size:clamp(14px,2.5vw,18px);opacity:.85;max-width:600px;margin:0 auto 32px;position:relative}
+
+/* TRACK BOX */
+.track-box{max-width:600px;margin:0 auto;background:rgba(255,255,255,.15);backdrop-filter:blur(8px);border-radius:16px;padding:24px;position:relative}
+.track-box h3{font-size:16px;margin-bottom:12px;opacity:.9}
+.track-row{display:flex;gap:8px}
+.track-row input{flex:1;padding:14px 16px;border:none;border-radius:10px;font-size:16px;outline:none;background:#fff;color:var(--text)}
+.track-row input::placeholder{color:var(--light)}
+.track-row button{padding:14px 24px;border:none;border-radius:10px;font-size:16px;cursor:pointer;font-weight:600;transition:.2s}
+.track-row .btn-search{background:var(--warning);color:#fff}
+.track-row .btn-search:hover{background:#e68a00}
+.track-row .btn-cam{background:rgba(255,255,255,.2);color:#fff}
+.track-row .btn-cam:hover{background:rgba(255,255,255,.3)}
+
+/* TRACK RESULT */
+.track-result{margin-top:16px;display:none}
+.track-result.show{display:block}
+.result-card{background:#fff;border-radius:12px;padding:20px;color:var(--text)}
+.result-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;flex-wrap:wrap;gap:8px}
+.result-tn{font-size:20px;font-weight:800;color:var(--primary);font-family:monospace}
+.result-info{display:grid;grid-template-columns:1fr 1fr;gap:8px;font-size:13px;margin-bottom:16px;padding:12px;background:var(--bg);border-radius:8px}
+.result-info .label{color:var(--muted);font-size:11px;text-transform:uppercase;font-weight:600}
+.timeline{position:relative;padding-left:28px}
+.timeline::before{content:'';position:absolute;left:11px;top:0;bottom:0;width:2px;background:var(--border)}
+.tl-item{position:relative;padding-bottom:20px}
+.tl-item:last-child{padding-bottom:0}
+.tl-dot{position:absolute;left:-23px;top:3px;width:14px;height:14px;border-radius:50%;border:3px solid var(--surface)}
+.tl-dot.active{background:var(--primary-light);box-shadow:0 0 0 3px var(--primary-pale)}
+.tl-dot.done{background:var(--success);box-shadow:0 0 0 3px #dcfce7}
+.tl-status{font-weight:700;font-size:13px;text-transform:uppercase}
+.tl-desc{font-size:12px;color:var(--muted);margin-top:2px}
+.tl-time{font-size:11px;color:var(--light);margin-top:2px}
+.result-error{text-align:center;padding:20px;color:var(--danger);font-weight:600}
+.badge{display:inline-flex;align-items:center;gap:4px;padding:4px 12px;border-radius:20px;font-size:11px;font-weight:700;text-transform:uppercase}
+.badge::before{content:'\\2022';font-size:8px}
+.badge-pending{background:#fef3c7;color:#92400e}
+.badge-processing{background:#e0f2fe;color:#0c4a6e}
+.badge-in-warehouse{background:#ede9fe;color:#5b21b6}
+.badge-out-for-delivery{background:#fef3c7;color:#92400e}
+.badge-delivered{background:#dcfce7;color:#166534}
+.badge-exception{background:#fee2e2;color:#991b1b}
+.badge-cancelled{background:#f1f5f9;color:#475569}
+
+/* STATS BAR */
+.stats-bar{display:flex;justify-content:center;gap:48px;padding:40px 24px;background:var(--surface);border-bottom:1px solid var(--border)}
+.stats-bar .stat{text-align:center}
+.stats-bar .stat-num{font-size:32px;font-weight:800;color:var(--primary)}
+.stats-bar .stat-label{font-size:13px;color:var(--muted);margin-top:4px}
+@media(max-width:600px){.stats-bar{gap:24px}.stats-bar .stat-num{font-size:24px}}
+
+/* SERVICES */
+.section{padding:64px 24px;max-width:1100px;margin:0 auto}
+.section-title{text-align:center;font-size:clamp(22px,4vw,32px);font-weight:800;margin-bottom:8px}
+.section-sub{text-align:center;color:var(--muted);font-size:15px;margin-bottom:40px;max-width:600px;margin-left:auto;margin-right:auto}
+.services-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:20px}
+.svc-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:28px;text-align:center;transition:.3s}
+.svc-card:hover{transform:translateY(-4px);box-shadow:var(--shadow)}
+.svc-icon{width:56px;height:56px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:24px;margin:0 auto 16px;color:#fff}
+.svc-card h3{font-size:16px;margin-bottom:8px}
+.svc-card p{font-size:13px;color:var(--muted);line-height:1.6}
+
+/* CALCULATOR */
+.calc-section{background:linear-gradient(135deg,#f0f4ff,#e0e7ff);padding:64px 24px}
+.calc-box{max-width:700px;margin:0 auto;background:var(--surface);border-radius:16px;padding:32px;box-shadow:var(--shadow)}
+.calc-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px}
+@media(max-width:480px){.calc-grid{grid-template-columns:1fr}}
+.calc-grid .fg{display:flex;flex-direction:column;gap:4px}
+.calc-grid .fg label{font-size:12px;font-weight:600;color:var(--muted);text-transform:uppercase}
+.calc-grid .fg input{padding:10px 12px;border:1px solid var(--border);border-radius:8px;font-size:16px;outline:none}
+.calc-grid .fg input:focus{border-color:var(--primary-light);box-shadow:0 0 0 3px rgba(59,130,246,.1)}
+.cbm-bar{text-align:center;background:var(--primary-pale);border-radius:8px;padding:10px;font-size:16px;font-weight:700;color:var(--primary);margin-bottom:16px}
+.price-table{width:100%;border-collapse:collapse}
+.price-table th,.price-table td{padding:10px 12px;text-align:right;font-size:14px;border-bottom:1px solid var(--border)}
+.price-table th{background:var(--bg);font-size:11px;text-transform:uppercase;color:var(--muted);font-weight:600}
+.price-table th:first-child,.price-table td:first-child{text-align:left}
+.row-reg td{background:#f0fdf4}
+.row-vip td{background:#fffbeb}
+.row-save td{background:#fef2f2;color:#dc2626;font-weight:600}
+.winner{color:var(--success);font-weight:700}
+.winner::after{content:' \\2713';font-size:12px}
+.final{font-size:18px;font-weight:800}
+.final-vip{color:var(--warning)}
+
+/* BRANCHES */
+.branches-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px}
+.branch-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:20px;transition:.2s}
+.branch-card:hover{box-shadow:var(--shadow)}
+.branch-card h4{font-size:15px;color:var(--primary);margin-bottom:8px;display:flex;align-items:center;gap:8px}
+.branch-card .info{font-size:13px;color:var(--muted);line-height:1.8}
+.branch-card .info i{width:16px;color:var(--primary-light)}
+
+/* CTA */
+.cta{background:linear-gradient(135deg,var(--secondary),var(--primary));color:#fff;padding:64px 24px;text-align:center}
+.cta h2{font-size:clamp(22px,4vw,32px);font-weight:800;margin-bottom:12px}
+.cta p{opacity:.8;font-size:15px;margin-bottom:28px;max-width:500px;margin-left:auto;margin-right:auto}
+.cta-btns{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+.cta-btns a{padding:14px 32px;border-radius:10px;font-weight:700;font-size:15px;transition:.2s}
+.cta-btns .btn-white{background:#fff;color:var(--primary)}
+.cta-btns .btn-white:hover{background:var(--primary-pale)}
+.cta-btns .btn-outline{border:2px solid rgba(255,255,255,.4);color:#fff}
+.cta-btns .btn-outline:hover{background:rgba(255,255,255,.1)}
+
+/* FOOTER */
+.footer{background:var(--secondary);color:#fff;padding:40px 24px;text-align:center}
+.footer-links{display:flex;justify-content:center;gap:24px;margin-bottom:16px;flex-wrap:wrap}
+.footer-links a{color:rgba(255,255,255,.6);font-size:13px}
+.footer-links a:hover{color:#fff}
+.footer-copy{font-size:12px;color:rgba(255,255,255,.4)}
+
+/* ANIMATIONS */
+@keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+.fade-up{animation:fadeUp .6s ease forwards}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="nav">
+  <div class="nav-brand"><i class="fas fa-shipping-fast"></i> Power Speed</div>
+  <div class="nav-links">
+    <a href="#services">ບໍລິການ</a>
+    <a href="#calculator">ຄິດໄລ່ລາຄາ</a>
+    <a href="#branches">ສາຂາ</a>
+    <a href="index.html" class="btn-login"><i class="fas fa-sign-in-alt"></i> ເຂົ້າລະບົບ</a>
+  </div>
+</nav>
+
+<!-- HERO + TRACKING -->
+<section class="hero">
+  <h1>ບໍລິການຂົນສົ່ງດ່ວນ<br>ລາວ — ໄທ — ຈີນ</h1>
+  <p>ສົ່ງພັດສະດຸຂ້າມປະເທດ ວ່ອງໄວ ປອດໄພ ລາຄາຍຸດຕິທຳ ຕິດຕາມສະຖານະແບບ Real-time</p>
+
+  <div class="track-box">
+    <h3><i class="fas fa-search-location"></i> ຕິດຕາມພັດສະດຸ</h3>
+    <div class="track-row">
+      <input type="text" id="trackInput" placeholder="ໃສ່ເລກຕິດຕາມ ເຊັ່ນ LA20260324001..." onkeydown="if(event.key==='Enter')doTrack()">
+      <button class="btn-cam" onclick="openCam()"><i class="fas fa-camera"></i></button>
+      <button class="btn-search" onclick="doTrack()"><i class="fas fa-search"></i> ຄົ້ນຫາ</button>
+    </div>
+    <div id="trackResult" class="track-result"></div>
+  </div>
+</section>
+
+<!-- STATS -->
+<div class="stats-bar">
+  <div class="stat"><div class="stat-num" id="statShip">0</div><div class="stat-label">ການຈັດສົ່ງທັງໝົດ</div></div>
+  <div class="stat"><div class="stat-num" id="statDel">0</div><div class="stat-label">ສົ່ງສຳເລັດ</div></div>
+  <div class="stat"><div class="stat-num">3</div><div class="stat-label">ປະເທດ</div></div>
+  <div class="stat"><div class="stat-num">5</div><div class="stat-label">ສາຂາ</div></div>
+</div>
+
+<!-- SERVICES -->
+<section class="section" id="services">
+  <h2 class="section-title">ບໍລິການຂອງພວກເຮົາ</h2>
+  <p class="section-sub">ພວກເຮົາໃຫ້ບໍລິການຂົນສົ່ງທີ່ຄົບວົງຈອນ ທັງພາຍໃນ ແລະ ຕ່າງປະເທດ</p>
+  <div class="services-grid">
+    <div class="svc-card">
+      <div class="svc-icon" style="background:linear-gradient(135deg,#3b82f6,#1e40af)"><i class="fas fa-truck-fast"></i></div>
+      <h3>ສົ່ງດ່ວນ Express</h3>
+      <p>ສົ່ງພາຍໃນ 1-3 ວັນ ລະຫວ່າງ ລາວ-ໄທ-ຈີນ ລວມການເກັບເງິນປາຍທາງ (COD)</p>
+    </div>
+    <div class="svc-card">
+      <div class="svc-icon" style="background:linear-gradient(135deg,#10b981,#059669)"><i class="fas fa-warehouse"></i></div>
+      <h3>ຄັງສິນຄ້າ</h3>
+      <p>ບໍລິການຮັບຝາກສິນຄ້າ ຈັດເກັບ ແລະ ແຈກຢາຍ ພ້ອມລະບົບຕິດຕາມ Real-time</p>
+    </div>
+    <div class="svc-card">
+      <div class="svc-icon" style="background:linear-gradient(135deg,#f59e0b,#d97706)"><i class="fas fa-globe-asia"></i></div>
+      <h3>ນຳເຂົ້າຈາກຕ່າງປະເທດ</h3>
+      <p>ຮັບນຳເຂົ້າສິນຄ້າຈາກ ຈີນ, ໄທ ແລະ ປະເທດອື່ນໆ ພ້ອມດຳເນີນພິທີການ</p>
+    </div>
+    <div class="svc-card">
+      <div class="svc-icon" style="background:linear-gradient(135deg,#8b5cf6,#6d28d9)"><i class="fas fa-qrcode"></i></div>
+      <h3>ຊຳລະງ່າຍ</h3>
+      <p>ຮັບຊຳລະຫຼາຍຊ່ອງທາງ: ເງິນສົດ, QR Code, ເກັບປາຍທາງ ແລະ ບັນຊີ</p>
+    </div>
+  </div>
+</section>
+
+<!-- CALCULATOR -->
+<section class="calc-section" id="calculator">
+  <div class="calc-box">
+    <h2 style="text-align:center;font-size:22px;margin-bottom:8px"><i class="fas fa-calculator" style="color:var(--primary)"></i> ຄິດໄລ່ຄ່າຂົນສົ່ງ</h2>
+    <p style="text-align:center;color:var(--muted);font-size:13px;margin-bottom:20px">ໃສ່ນ້ຳໜັກ ຫຼື ຂະໜາດ (ຫຼື ທັງສອງ) ເພື່ອເບິ່ງລາຄາ</p>
+    <div class="calc-grid">
+      <div class="fg"><label>ນ້ຳໜັກ (kg)</label><input type="number" id="cKg" min="0" step="0.1" placeholder="0.0" oninput="calcPrice()"></div>
+      <div class="fg"><label>ຍາວ (cm)</label><input type="number" id="cL" min="0" placeholder="0" oninput="calcPrice()"></div>
+      <div class="fg"><label>ກວ້າງ (cm)</label><input type="number" id="cW" min="0" placeholder="0" oninput="calcPrice()"></div>
+      <div class="fg"><label>ສູງ (cm)</label><input type="number" id="cH" min="0" placeholder="0" oninput="calcPrice()"></div>
+    </div>
+    <div class="cbm-bar" id="cbmBar">CBM: —</div>
+    <div id="priceResult">
+      <p style="text-align:center;color:var(--muted);padding:16px;font-size:14px"><i class="fas fa-keyboard"></i> ກະລຸນາໃສ່ຂໍ້ມູນເພື່ອເບິ່ງລາຄາ</p>
+    </div>
+  </div>
+</section>
+
+<!-- BRANCHES -->
+<section class="section" id="branches">
+  <h2 class="section-title">ສາຂາ & ຕົວແທນ</h2>
+  <p class="section-sub">ເຄືອຂ່າຍການບໍລິການຄອບຄຸມ 3 ປະເທດ</p>
+  <div class="branches-grid">
+    <div class="branch-card">
+      <h4><i class="fas fa-map-marker-alt"></i> ວຽງຈັນ (ສຳນັກງານໃຫຍ່)</h4>
+      <div class="info">
+        <div><i class="fas fa-location-dot"></i> 23 ຖະໜົນລ້ານຊ້າງ, ນະຄອນຫຼວງວຽງຈັນ</div>
+        <div><i class="fas fa-phone"></i> +856 21 234567</div>
+        <div><i class="fas fa-envelope"></i> vte@prologists.la</div>
+      </div>
+    </div>
+    <div class="branch-card">
+      <h4><i class="fas fa-map-marker-alt"></i> ຫຼວງພະບາງ</h4>
+      <div class="info">
+        <div><i class="fas fa-location-dot"></i> 7 ຖະໜົນໂພທິສາລາດ, ຫຼວງພະບາງ</div>
+        <div><i class="fas fa-phone"></i> +856 71 212345</div>
+        <div><i class="fas fa-envelope"></i> lpb@prologists.la</div>
+      </div>
+    </div>
+    <div class="branch-card">
+      <h4><i class="fas fa-map-marker-alt"></i> ປາກເຊ</h4>
+      <div class="info">
+        <div><i class="fas fa-location-dot"></i> 15 ຖະໜົນນາກຈຳປາ, ປາກເຊ</div>
+        <div><i class="fas fa-phone"></i> +856 31 251234</div>
+        <div><i class="fas fa-envelope"></i> pks@prologists.la</div>
+      </div>
+    </div>
+    <div class="branch-card">
+      <h4><i class="fas fa-map-marker-alt"></i> ກຸງເທບ (ໄທ)</h4>
+      <div class="info">
+        <div><i class="fas fa-location-dot"></i> 88 Silom Rd, Bangkok, Thailand</div>
+        <div><i class="fas fa-phone"></i> +66 2 345 6789</div>
+        <div><i class="fas fa-envelope"></i> bkk@prologists.la</div>
+      </div>
+    </div>
+    <div class="branch-card">
+      <h4><i class="fas fa-map-marker-alt"></i> ຄຸນໝິງ (ຈີນ)</h4>
+      <div class="info">
+        <div><i class="fas fa-location-dot"></i> 56 Renmin Donglu, Kunming, China</div>
+        <div><i class="fas fa-phone"></i> +86 871 1234567</div>
+        <div><i class="fas fa-envelope"></i> kmg@prologists.la</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="cta">
+  <h2>ພ້ອມສົ່ງພັດສະດຸແລ້ວບໍ?</h2>
+  <p>ລົງທະບຽນເພື່ອເລີ່ມໃຊ້ບໍລິການ ຫຼື ຕິດຕໍ່ພວກເຮົາສຳລັບລາຄາພິເສດ</p>
+  <div class="cta-btns">
+    <a href="index.html" class="btn-white"><i class="fas fa-user-plus"></i> ລົງທະບຽນ / ເຂົ້າລະບົບ</a>
+    <a href="tel:+85621234567" class="btn-outline"><i class="fas fa-phone"></i> ໂທຫາພວກເຮົາ</a>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer class="footer">
+  <div class="footer-links">
+    <a href="#services">ບໍລິການ</a>
+    <a href="#calculator">ຄິດໄລ່ລາຄາ</a>
+    <a href="#branches">ສາຂາ</a>
+    <a href="index.html">ເຂົ້າລະບົບ</a>
+    <a href="calculator.html">ເຄື່ອງຄິດໄລ່</a>
+  </div>
+  <div class="footer-copy">&copy; 2026 Power Speed Logistics (ProLogis) — ບໍລິການຂົນສົ່ງດ່ວນ ລາວ-ໄທ-ຈີນ</div>
+</footer>
+
+<script>
+// === TRACKING ===
+function getDB() {
+  try {
+    const raw = localStorage.getItem('erp_shipments');
+    return raw ? JSON.parse(raw) : [];
+  } catch(e) { return []; }
+}
+function getTracking() {
+  try {
+    const raw = localStorage.getItem('erp_tracking');
+    return raw ? JSON.parse(raw) : [];
+  } catch(e) { return []; }
+}
+
+function doTrack() {
+  const tn = document.getElementById('trackInput').value.trim().toUpperCase();
+  const el = document.getElementById('trackResult');
+  if (!tn) { el.className='track-result show'; el.innerHTML='<div class="result-card"><p style="text-align:center;color:var(--warning)">ກະລຸນາໃສ່ເລກຕິດຕາມ</p></div>'; return; }
+
+  const shipments = getDB();
+  const s = shipments.find(x => x.trackingNumber === tn);
+  if (!s) {
+    el.className='track-result show';
+    el.innerHTML='<div class="result-card"><div class="result-error"><i class="fas fa-exclamation-triangle"></i> ບໍ່ພົບເລກຕິດຕາມ: '+tn+'<br><small style="color:var(--muted);font-weight:400">ກະລຸນາກວດສອບເລກຕິດຕາມແລ້ວລອງໃໝ່</small></div></div>';
+    return;
+  }
+
+  const tracking = getTracking().filter(t => t.shipmentId === s.id);
+  const statusMap = {
+    'pending':'badge-pending','processing':'badge-processing','in-warehouse':'badge-in-warehouse',
+    'out-for-delivery':'badge-out-for-delivery','delivered':'badge-delivered',
+    'exception':'badge-exception','cancelled':'badge-cancelled'
+  };
+  const statusLabel = {
+    'pending':'ລໍຖ້າ','processing':'ກຳລັງດຳເນີນ','in-warehouse':'ຢູ່ໃນສາງ',
+    'out-for-delivery':'ກຳລັງຈັດສົ່ງ','delivered':'ສົ່ງສຳເລັດ',
+    'exception':'ມີບັນຫາ','cancelled':'ຍົກເລີກ'
+  };
+
+  el.className='track-result show';
+  el.innerHTML = `
+    <div class="result-card fade-up">
+      <div class="result-header">
+        <span class="result-tn">${s.trackingNumber}</span>
+        <span class="badge ${statusMap[s.status]||'badge-pending'}">${statusLabel[s.status]||s.status}</span>
+      </div>
+      <div class="result-info">
+        <div><div class="label">ຜູ້ສົ່ງ</div>${s.senderName}, ${s.senderCity||''}</div>
+        <div><div class="label">ຜູ້ຮັບ</div>${s.receiverName}, ${s.receiverCity||''}</div>
+        <div><div class="label">ນ້ຳໜັກ</div>${s.weight||0} kg</div>
+        <div><div class="label">ບໍລິການ</div>${s.service||'Standard'}</div>
+      </div>
+      ${tracking.length ? `
+      <h4 style="font-size:14px;margin-bottom:12px;color:var(--muted)"><i class="fas fa-route"></i> ເສັ້ນທາງ</h4>
+      <div class="timeline">
+        ${tracking.slice(-5).map((h,i,arr) => `<div class="tl-item">
+          <div class="tl-dot ${i===arr.length-1?'active':'done'}"></div>
+          <div>
+            <div class="tl-status">${(h.status||'').replace(/-/g,' ')}</div>
+            <div class="tl-desc">${h.description||''}</div>
+            <div class="tl-time"><i class="fas fa-clock"></i> ${fmtDate(h.timestamp)}</div>
+          </div>
+        </div>`).join('')}
+      </div>` : '<p style="text-align:center;color:var(--muted);font-size:13px;padding:12px">ຍັງບໍ່ມີຂໍ້ມູນເສັ້ນທາງ</p>'}
+    </div>`;
+}
+
+function fmtDate(iso) {
+  if (!iso) return '';
+  const d = new Date(iso);
+  return d.toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'}) + ' ' + d.toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'});
+}
+
+function openCam() {
+  if (!('BarcodeDetector' in window)) { alert('ບຣາວເຊີບໍ່ຮອງຮັບ BarcodeDetector (ໃຊ້ Chrome/Edge)'); return; }
+  const input = document.getElementById('trackInput');
+  const overlay = document.createElement('div');
+  overlay.id='scanOverlay';
+  overlay.style.cssText='position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,.9);display:flex;flex-direction:column;align-items:center;justify-content:center';
+  overlay.innerHTML='<video id="scanVid" autoplay playsinline style="max-width:90%;max-height:70vh;border-radius:12px;border:3px solid #3b82f6"></video><button onclick="closeCam()" style="margin-top:16px;padding:12px 32px;background:#ef4444;color:#fff;border:none;border-radius:8px;font-size:16px;cursor:pointer"><i class="fas fa-times"></i> ປິດ</button>';
+  document.body.appendChild(overlay);
+  navigator.mediaDevices.getUserMedia({video:{facingMode:'environment'}}).then(stream=>{
+    const vid=document.getElementById('scanVid');vid.srcObject=stream;
+    const det=new BarcodeDetector();
+    const scan=setInterval(async()=>{
+      try{const r=await det.detect(vid);if(r.length){clearInterval(scan);input.value=r[0].rawValue.toUpperCase();stream.getTracks().forEach(t=>t.stop());overlay.remove();doTrack()}}catch(e){}
+    },300);
+    overlay._interval=scan;overlay._stream=stream;
+  }).catch(()=>{overlay.remove();alert('ບໍ່ສາມາດເປີດກ້ອງໄດ້')});
+}
+function closeCam(){const o=document.getElementById('scanOverlay');if(o){clearInterval(o._interval);o._stream?.getTracks().forEach(t=>t.stop());o.remove()}}
+
+// === CALCULATOR ===
+function getRates() {
+  try { return JSON.parse(localStorage.getItem('erp_pricing'))||{perKg:10000,perCBM:1000000,vipPerKg:8000,vipPerCBM:800000}; }
+  catch(e) { return {perKg:10000,perCBM:1000000,vipPerKg:8000,vipPerCBM:800000}; }
+}
+function fmt(n){return n.toLocaleString('en-US')}
+
+function calcPrice() {
+  const kg=parseFloat(document.getElementById('cKg').value)||0;
+  const l=parseFloat(document.getElementById('cL').value)||0;
+  const w=parseFloat(document.getElementById('cW').value)||0;
+  const h=parseFloat(document.getElementById('cH').value)||0;
+  const cbm=(l&&w&&h)?(l*w*h)/1e6:0;
+  document.getElementById('cbmBar').textContent=cbm>0?`CBM: ${cbm.toFixed(4)} m\u00B3 (${l}\u00D7${w}\u00D7${h} cm)`:'CBM: \u2014';
+  const el=document.getElementById('priceResult');
+  if(!kg&&!cbm){el.innerHTML='<p style="text-align:center;color:var(--muted);padding:16px;font-size:14px"><i class="fas fa-keyboard"></i> ກະລຸນາໃສ່ຂໍ້ມູນເພື່ອເບິ່ງລາຄາ</p>';return}
+  const r=getRates();
+  const rK=kg*r.perKg,rC=cbm*r.perCBM,rF=Math.max(rK,rC),rM=rK>=rC?'kg':'cbm';
+  const vK=kg*(r.vipPerKg||r.perKg),vC=cbm*(r.vipPerCBM||r.perCBM),vF=Math.max(vK,vC),vM=vK>=vC?'kg':'cbm';
+  const save=rF-vF,pct=rF>0?((save/rF)*100).toFixed(1):0;
+  el.innerHTML=`<table class="price-table">
+    <thead><tr><th></th><th>ຕາມ kg</th><th>ຕາມ CBM</th><th>ລາຄາສຸດທ້າຍ</th></tr></thead>
+    <tbody>
+    <tr class="row-reg"><td><span class="badge" style="background:#dcfce7;color:#166534">ທົ່ວໄປ</span></td>
+      <td class="${rM==='kg'?'winner':''}">${kg?fmt(rK)+' LAK':'\u2014'}</td>
+      <td class="${rM==='cbm'?'winner':''}">${cbm?fmt(Math.round(rC))+' LAK':'\u2014'}</td>
+      <td class="final">${fmt(Math.round(rF))} LAK</td></tr>
+    <tr class="row-vip"><td><span class="badge" style="background:#fef3c7;color:#92400e">\u2B50 VIP</span></td>
+      <td class="${vM==='kg'?'winner':''}">${kg?fmt(vK)+' LAK':'\u2014'}</td>
+      <td class="${vM==='cbm'?'winner':''}">${cbm?fmt(Math.round(vC))+' LAK':'\u2014'}</td>
+      <td class="final final-vip">${fmt(Math.round(vF))} LAK</td></tr>
+    ${save>0?`<tr class="row-save"><td><i class="fas fa-piggy-bank"></i> ປະຢັດ</td><td colspan="2" style="text-align:center;color:var(--muted);font-weight:400">ສ່ວນຫຼຸດ ${pct}%</td><td style="font-size:16px">-${fmt(Math.round(save))} LAK</td></tr>`:''}
+    </tbody></table>`;
+}
+
+// === INIT ===
+(function(){
+  const all=getDB();
+  document.getElementById('statShip').textContent=all.length;
+  document.getElementById('statDel').textContent=all.filter(s=>s.status==='delivered').length;
+  // Smooth scroll
+  document.querySelectorAll('a[href^="#"]').forEach(a=>{
+    a.addEventListener('click',e=>{e.preventDefault();const t=document.querySelector(a.getAttribute('href'));if(t)t.scrollIntoView({behavior:'smooth',block:'start'})});
+  });
+})();
+</script>
+</body>
+</html>

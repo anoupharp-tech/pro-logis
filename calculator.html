@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="lo">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ເຄື່ອງຄິດໄລ່ລາຄາ — ProLogis</title>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--primary:#2563eb;--primary-dark:#1d4ed8;--success:#16a34a;--warning:#d97706;--bg:#f0f4ff;--card:#fff;--text:#1e293b;--muted:#64748b;--border:#e2e8f0;--radius:12px}
+body{font-family:'Segoe UI',Tahoma,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;padding:20px}
+.container{max-width:720px;margin:0 auto}
+.header{text-align:center;margin-bottom:24px}
+.header h1{font-size:24px;color:var(--primary);margin-bottom:4px}
+.header p{color:var(--muted);font-size:14px}
+.header a{color:var(--primary);text-decoration:none;font-size:13px}
+.card{background:var(--card);border-radius:var(--radius);box-shadow:0 1px 3px rgba(0,0,0,.08);padding:24px;margin-bottom:20px;border:1px solid var(--border)}
+.card-title{font-size:16px;font-weight:700;margin-bottom:16px;display:flex;align-items:center;gap:8px}
+.input-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media(max-width:480px){.input-grid{grid-template-columns:1fr}}
+.form-group{display:flex;flex-direction:column;gap:4px}
+.form-group label{font-size:12px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.5px}
+.form-group input{padding:10px 12px;border:1px solid var(--border);border-radius:8px;font-size:16px;outline:none;transition:border .2s}
+.form-group input:focus{border-color:var(--primary);box-shadow:0 0 0 3px rgba(37,99,235,.1)}
+.form-group input[readonly]{background:#f8fafc;color:var(--muted);cursor:default}
+.cbm-display{grid-column:span 2;background:linear-gradient(135deg,#eff6ff,#dbeafe);border-radius:8px;padding:12px 16px;text-align:center;font-size:18px;font-weight:700;color:var(--primary)}
+@media(max-width:480px){.cbm-display{grid-column:span 1}}
+.rates-info{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px}
+.rate-card{padding:12px;border-radius:8px;text-align:center}
+.rate-card.regular{background:#f0fdf4;border:1px solid #bbf7d0}
+.rate-card.vip{background:#fffbeb;border:1px solid #fde68a}
+.rate-card .label{font-size:11px;font-weight:600;text-transform:uppercase;color:var(--muted);margin-bottom:4px}
+.rate-card .values{font-size:13px;color:var(--text)}
+
+table{width:100%;border-collapse:collapse;margin-top:12px}
+th,td{padding:10px 12px;text-align:right;font-size:14px;border-bottom:1px solid var(--border)}
+th{background:#f8fafc;font-size:11px;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);font-weight:600}
+th:first-child,td:first-child{text-align:left}
+.row-regular td{background:#f0fdf4}
+.row-vip td{background:#fffbeb}
+.row-saving td{background:#fef2f2;color:#dc2626;font-weight:600}
+.winner{color:var(--success);font-weight:700;position:relative}
+.winner::after{content:' ✓';font-size:12px}
+.final-price{font-size:20px;font-weight:800}
+.final-vip{color:var(--warning)}
+.empty-state{text-align:center;padding:32px;color:var(--muted);font-size:14px}
+.badge{display:inline-block;padding:2px 8px;border-radius:99px;font-size:11px;font-weight:600}
+.badge-green{background:#dcfce7;color:#166534}
+.badge-amber{background:#fef3c7;color:#92400e}
+.footer{text-align:center;color:var(--muted);font-size:12px;margin-top:20px;padding:16px 0}
+</style>
+</head>
+<body>
+
+<div class="container">
+  <div class="header">
+    <h1><i class="fas fa-calculator"></i> ເຄື່ອງຄິດໄລ່ລາຄາ</h1>
+    <p>ProLogis — ຄິດໄລ່ຄ່າຂົນສົ່ງຕາມນ້ຳໜັກ ຫຼື ແມັດກ້ອນ</p>
+    <a href="index.html"><i class="fas fa-arrow-left"></i> ກັບໄປໜ້າຫຼັກ</a>
+  </div>
+
+  <!-- Input -->
+  <div class="card">
+    <div class="card-title"><i class="fas fa-box" style="color:var(--primary)"></i> ຂໍ້ມູນພັດສະດຸ</div>
+    <div class="input-grid">
+      <div class="form-group">
+        <label>ນ້ຳໜັກ (kg)</label>
+        <input type="number" id="inKg" min="0" step="0.1" placeholder="0.0" oninput="calc()">
+      </div>
+      <div class="form-group">
+        <label>ຍາວ (cm)</label>
+        <input type="number" id="inL" min="0" placeholder="0" oninput="calc()">
+      </div>
+      <div class="form-group">
+        <label>ກວ້າງ (cm)</label>
+        <input type="number" id="inW" min="0" placeholder="0" oninput="calc()">
+      </div>
+      <div class="form-group">
+        <label>ສູງ (cm)</label>
+        <input type="number" id="inH" min="0" placeholder="0" oninput="calc()">
+      </div>
+      <div class="cbm-display" id="cbmDisplay">CBM: —</div>
+    </div>
+  </div>
+
+  <!-- Rates Info -->
+  <div class="card">
+    <div class="card-title"><i class="fas fa-tags" style="color:var(--warning)"></i> ອັດຕາລາຄາປັດຈຸບັນ</div>
+    <div class="rates-info">
+      <div class="rate-card regular">
+        <div class="label"><span class="badge badge-green">ທົ່ວໄປ</span></div>
+        <div class="values" id="rateRegular">—</div>
+      </div>
+      <div class="rate-card vip">
+        <div class="label"><span class="badge badge-amber">⭐ VIP</span></div>
+        <div class="values" id="rateVIP">—</div>
+      </div>
+    </div>
+    <div style="font-size:12px;color:var(--muted);text-align:center">
+      <i class="fas fa-info-circle"></i> ລະບົບໃຊ້ລາຄາທີ່ <strong>ສູງກວ່າ</strong> ລະຫວ່າງ (ນ້ຳໜັກ × ລາຄາ/kg) ແລະ (CBM × ລາຄາ/m³)
+    </div>
+  </div>
+
+  <!-- Result -->
+  <div class="card">
+    <div class="card-title"><i class="fas fa-receipt" style="color:var(--success)"></i> ຜົນການຄິດໄລ່</div>
+    <div id="resultArea">
+      <div class="empty-state">
+        <i class="fas fa-keyboard" style="font-size:32px;margin-bottom:8px;display:block;opacity:.4"></i>
+        ກະລຸນາໃສ່ນ້ຳໜັກ ຫຼື ຂະໜາດເພື່ອຄິດໄລ່ລາຄາ
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="footer">
+  &copy; 2026 ProLogis Logistics — Power Speed
+</div>
+
+<script>
+function getRates() {
+  try {
+    return JSON.parse(localStorage.getItem('erp_pricing')) || { perKg:10000, perCBM:1000000, vipPerKg:8000, vipPerCBM:800000 };
+  } catch(e) {
+    return { perKg:10000, perCBM:1000000, vipPerKg:8000, vipPerCBM:800000 };
+  }
+}
+
+function fmt(n) {
+  return n.toLocaleString('en-US');
+}
+
+function showRates() {
+  const r = getRates();
+  document.getElementById('rateRegular').innerHTML =
+    `${fmt(r.perKg)} LAK/kg<br>${fmt(r.perCBM)} LAK/m³`;
+  document.getElementById('rateVIP').innerHTML =
+    `${fmt(r.vipPerKg||r.perKg)} LAK/kg<br>${fmt(r.vipPerCBM||r.perCBM)} LAK/m³`;
+}
+
+function calc() {
+  const kg = parseFloat(document.getElementById('inKg').value) || 0;
+  const l  = parseFloat(document.getElementById('inL').value)  || 0;
+  const w  = parseFloat(document.getElementById('inW').value)  || 0;
+  const h  = parseFloat(document.getElementById('inH').value)  || 0;
+  const cbm = (l && w && h) ? (l*w*h)/1e6 : 0;
+
+  // CBM display
+  document.getElementById('cbmDisplay').textContent = cbm > 0
+    ? `CBM: ${cbm.toFixed(4)} m³  (${l}×${w}×${h} cm)`
+    : 'CBM: —';
+
+  const area = document.getElementById('resultArea');
+  if (!kg && !cbm) {
+    area.innerHTML = `<div class="empty-state">
+      <i class="fas fa-keyboard" style="font-size:32px;margin-bottom:8px;display:block;opacity:.4"></i>
+      ກະລຸນາໃສ່ນ້ຳໜັກ ຫຼື ຂະໜາດເພື່ອຄິດໄລ່ລາຄາ
+    </div>`;
+    return;
+  }
+
+  const r = getRates();
+  const regByKg  = kg * r.perKg;
+  const regByCBM = cbm * r.perCBM;
+  const regFinal = Math.max(regByKg, regByCBM);
+  const regMethod = regByKg >= regByCBM ? 'kg' : 'cbm';
+
+  const vipKgRate  = r.vipPerKg  || r.perKg;
+  const vipCBMRate = r.vipPerCBM || r.perCBM;
+  const vipByKg  = kg * vipKgRate;
+  const vipByCBM = cbm * vipCBMRate;
+  const vipFinal = Math.max(vipByKg, vipByCBM);
+  const vipMethod = vipByKg >= vipByCBM ? 'kg' : 'cbm';
+
+  const saving = regFinal - vipFinal;
+  const savingPct = regFinal > 0 ? ((saving / regFinal) * 100).toFixed(1) : 0;
+
+  area.innerHTML = `
+    <table>
+      <thead>
+        <tr>
+          <th></th>
+          <th>ຕາມນ້ຳໜັກ (kg)</th>
+          <th>ຕາມແມັດກ້ອນ (CBM)</th>
+          <th>ລາຄາສຸດທ້າຍ</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr class="row-regular">
+          <td><span class="badge badge-green">ທົ່ວໄປ</span></td>
+          <td class="${regMethod==='kg'?'winner':''}">${kg ? fmt(regByKg)+' LAK' : '—'}${kg ? '<br><small style="color:var(--muted)">'+kg+' × '+fmt(r.perKg)+'</small>':''}</td>
+          <td class="${regMethod==='cbm'?'winner':''}">${cbm ? fmt(Math.round(regByCBM))+' LAK' : '—'}${cbm ? '<br><small style="color:var(--muted)">'+cbm.toFixed(4)+' × '+fmt(r.perCBM)+'</small>':''}</td>
+          <td class="final-price">${fmt(Math.round(regFinal))} LAK</td>
+        </tr>
+        <tr class="row-vip">
+          <td><span class="badge badge-amber">⭐ VIP</span></td>
+          <td class="${vipMethod==='kg'?'winner':''}">${kg ? fmt(vipByKg)+' LAK' : '—'}${kg ? '<br><small style="color:var(--muted)">'+kg+' × '+fmt(vipKgRate)+'</small>':''}</td>
+          <td class="${vipMethod==='cbm'?'winner':''}">${cbm ? fmt(Math.round(vipByCBM))+' LAK' : '—'}${cbm ? '<br><small style="color:var(--muted)">'+cbm.toFixed(4)+' × '+fmt(vipCBMRate)+'</small>':''}</td>
+          <td class="final-price final-vip">${fmt(Math.round(vipFinal))} LAK</td>
+        </tr>
+        ${saving > 0 ? `
+        <tr class="row-saving">
+          <td><i class="fas fa-piggy-bank"></i> ປະຢັດ VIP</td>
+          <td colspan="2" style="text-align:center;color:var(--muted);font-weight:400">ສ່ວນຫຼຸດ ${savingPct}%</td>
+          <td style="color:#dc2626;font-size:18px">-${fmt(Math.round(saving))} LAK</td>
+        </tr>` : ''}
+      </tbody>
+    </table>
+  `;
+}
+
+// Init
+showRates();
+</script>
+</body>
+</html>
