@@ -623,6 +623,7 @@ const Pages3 = (() => {
       <button class="tab-btn active" onclick="App.switchTab(this,'stab_general')">General</button>
       <button class="tab-btn" onclick="App.switchTab(this,'stab_company')">Company</button>
       ${user.role==='admin'?`<button class="tab-btn" onclick="App.switchTab(this,'stab_pricing');setTimeout(()=>Pages3.calcPricePreview(),50)"><i class="fas fa-tags"></i> ${I18n.t('pricingRates')}</button>`:''}
+      ${user.role==='admin'?`<button class="tab-btn" onclick="App.switchTab(this,'stab_branches');Pages3.loadBranches()"><i class="fas fa-sitemap"></i> ${I18n.t('agents')}</button>`:''}
       <button class="tab-btn" onclick="App.switchTab(this,'stab_users')">Users</button>
       <button class="tab-btn" onclick="App.switchTab(this,'stab_security')">Security</button>
     </div>
@@ -745,6 +746,18 @@ const Pages3 = (() => {
         </div>
       </div>
     </div>
+    ${user.role==='admin'?`
+    <div id="stab_branches" class="tab-panel">
+      <div class="card">
+        <div class="card-header" style="display:flex;justify-content:space-between;align-items:center">
+          <span class="card-title"><i class="fas fa-sitemap"></i> ${I18n.t('agentManagement')}</span>
+          <button class="btn btn-primary btn-sm" onclick="Pages3.openBranchForm()"><i class="fas fa-plus"></i> ${I18n.t('addAgent')}</button>
+        </div>
+        <div class="card-body">
+          <div id="branchList"></div>
+        </div>
+      </div>
+    </div>`:''}
     <div id="stab_security" class="tab-panel">
       <div class="card">
         <div class="card-header"><span class="card-title"><i class="fas fa-lock"></i> ${I18n.t('changePassword')}</span></div>
@@ -832,5 +845,109 @@ const Pages3 = (() => {
     Utils.toast('Password updated successfully', 'success');
   }
 
-  return { renderAnalytics, reloadAnalytics, renderExceptions, openExceptionForm, saveException, resolveException, editException, updateException, renderPayments, updateQRPreview, generatePaymentQR, downloadQR, markCODCollected, renderLabels, previewLabel, printSingleLabel, selectAllLabels, batchPrintSelected, renderGPS, initMap, focusDriver, refreshGPS, renderNotifications, markAllRead, openSendNotification, sendNotification, renderSettings, changePassword, getPricingRates, savePricingRates, calcPricePreview };
+  // === BRANCH MANAGEMENT ===
+  function loadBranches() {
+    const el = document.getElementById('branchList');
+    if (!el) return;
+    const agents = DB.Agents.getAll();
+    if (!agents.length) {
+      el.innerHTML = `<p style="text-align:center;color:var(--text-muted);padding:24px">${I18n.t('noData')}</p>`;
+      return;
+    }
+    el.innerHTML = `<div class="table-wrap"><table class="data-table">
+      <thead><tr>
+        <th>${I18n.t('branchName')}</th><th>${I18n.t('agentCode')}</th>
+        <th>${I18n.t('phone')}</th><th>${I18n.t('email')}</th>
+        <th>${I18n.t('city')}</th><th>${I18n.t('status')}</th><th></th>
+      </tr></thead>
+      <tbody>${agents.map(a => `<tr>
+        <td><strong>${a.name}</strong><br><small style="color:var(--text-muted)">${a.address||''}</small></td>
+        <td><code>${a.code||''}</code></td>
+        <td>${a.phone||''}</td>
+        <td>${a.email||''}</td>
+        <td>${a.city||''}${a.country?' ('+a.country+')':''}</td>
+        <td>${Utils.statusBadge(a.active?'active':'inactive')}</td>
+        <td style="white-space:nowrap">
+          <button class="btn btn-secondary btn-sm" onclick="Pages3.openBranchForm(${a.id})" title="Edit"><i class="fas fa-edit"></i></button>
+          <button class="btn btn-sm" style="background:#fee2e2;color:#991b1b" onclick="Pages3.deleteBranch(${a.id})" title="Delete"><i class="fas fa-trash"></i></button>
+        </td>
+      </tr>`).join('')}</tbody>
+    </table></div>`;
+  }
+
+  function openBranchForm(id) {
+    const a = id ? DB.Agents.getById(id) : null;
+    const title = a ? `${I18n.t('edit')} — ${a.name}` : I18n.t('addAgent');
+    App.openModal(title, `
+      <div class="form-grid2" style="gap:12px">
+        <div class="form-group"><label>${I18n.t('branchName')} *</label><input id="br_name" value="${a?.name||''}" placeholder="ຊື່ສາຂາ..."></div>
+        <div class="form-group"><label>${I18n.t('agentCode')}</label><input id="br_code" value="${a?.code||''}" placeholder="VTE-001"></div>
+        <div class="form-group"><label>${I18n.t('phone')}</label><input id="br_phone" value="${a?.phone||''}" placeholder="+856 21 ..."></div>
+        <div class="form-group"><label>${I18n.t('email')}</label><input id="br_email" value="${a?.email||''}" placeholder="email@prologists.la"></div>
+        <div class="form-group"><label>${I18n.t('address')}</label><input id="br_address" value="${a?.address||''}" placeholder="ທີ່ຢູ່..."></div>
+        <div class="form-group"><label>${I18n.t('city')}</label><input id="br_city" value="${a?.city||''}" placeholder="ເມືອງ"></div>
+        <div class="form-group"><label>${I18n.t('country')}</label>
+          <select id="br_country" style="width:100%;padding:8px;border:1px solid var(--border);border-radius:6px">
+            <option value="LA" ${(a?.country||'LA')==='LA'?'selected':''}>ລາວ (LA)</option>
+            <option value="TH" ${a?.country==='TH'?'selected':''}>ໄທ (TH)</option>
+            <option value="CN" ${a?.country==='CN'?'selected':''}>ຈີນ (CN)</option>
+            <option value="VN" ${a?.country==='VN'?'selected':''}>ຫວຽດນາມ (VN)</option>
+            <option value="MM" ${a?.country==='MM'?'selected':''}>ມຽນມາ (MM)</option>
+          </select>
+        </div>
+        <div class="form-group"><label>${I18n.t('commission')}</label><input id="br_commission" type="number" min="0" max="100" step="0.5" value="${a?.commission||7}" placeholder="7"></div>
+        <div class="form-group" style="grid-column:span 2">
+          <label style="display:flex;align-items:center;gap:8px;cursor:pointer">
+            <input type="checkbox" id="br_active" ${(a?.active!==false)?'checked':''} style="width:16px;height:16px">
+            ${I18n.t('status')}: Active
+          </label>
+        </div>
+      </div>
+    `, [
+      { label: I18n.t('cancel'), cls: 'btn-secondary', action: 'App.closeModal()' },
+      { label: '<i class="fas fa-save"></i> ' + I18n.t('save'), cls: 'btn-primary', action: `Pages3.saveBranch(${id||0})` }
+    ], 'modal-lg');
+  }
+
+  function saveBranch(id) {
+    const name = document.getElementById('br_name')?.value.trim();
+    if (!name) { Utils.toast('ກະລຸນາໃສ່ຊື່ສາຂາ', 'warning'); return; }
+    const data = {
+      name,
+      code: document.getElementById('br_code')?.value.trim() || '',
+      phone: document.getElementById('br_phone')?.value.trim() || '',
+      email: document.getElementById('br_email')?.value.trim() || '',
+      address: document.getElementById('br_address')?.value.trim() || '',
+      city: document.getElementById('br_city')?.value.trim() || '',
+      country: document.getElementById('br_country')?.value || 'LA',
+      commission: parseFloat(document.getElementById('br_commission')?.value) || 7,
+      active: document.getElementById('br_active')?.checked !== false
+    };
+    if (id) {
+      DB.Agents.update(id, data);
+      Utils.toast(`${name} ອັບເດດສຳເລັດ`, 'success');
+    } else {
+      DB.Agents.create(data);
+      Utils.toast(`${name} ເພີ່ມສຳເລັດ`, 'success');
+    }
+    App.closeModal();
+    loadBranches();
+  }
+
+  function deleteBranch(id) {
+    const a = DB.Agents.getById(id);
+    if (!a) return;
+    App.openModal('ຢືນຢັນການລຶບ', `
+      <p style="text-align:center;padding:16px">
+        <i class="fas fa-exclamation-triangle" style="font-size:32px;color:var(--danger);display:block;margin-bottom:12px"></i>
+        ທ່ານແນ່ໃຈບໍ່ວ່າຈະລຶບສາຂາ <strong>${a.name}</strong>?<br>
+        <small style="color:var(--text-muted)">ການລຶບບໍ່ສາມາດກູ້ຄືນໄດ້</small>
+      </p>
+    `, [
+      { label: I18n.t('cancel'), cls: 'btn-secondary', action: 'App.closeModal()' },
+      { label: '<i class="fas fa-trash"></i> ລຶບ', cls: 'btn-danger', action: `(()=>{DB.Agents.delete(${id});App.closeModal();Pages3.loadBranches();Utils.toast('ລຶບສຳເລັດ','success')})()` }
+    ]);
+  }
+
+  return { renderAnalytics, reloadAnalytics, renderExceptions, openExceptionForm, saveException, resolveException, editException, updateException, renderPayments, updateQRPreview, generatePaymentQR, downloadQR, markCODCollected, renderLabels, previewLabel, printSingleLabel, selectAllLabels, batchPrintSelected, renderGPS, initMap, focusDriver, refreshGPS, renderNotifications, markAllRead, openSendNotification, sendNotification, renderSettings, changePassword, getPricingRates, savePricingRates, calcPricePreview, loadBranches, openBranchForm, saveBranch, deleteBranch };
 })();
